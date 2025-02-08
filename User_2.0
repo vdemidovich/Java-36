@@ -1,7 +1,7 @@
 class User implements CustomClass {
-    private final String name;
-    private final String password;
-    private final String email;
+    private String name;
+    private String password;
+    private String email;
 
     private User(Builder builder) {
         this.name = builder.name;
@@ -15,8 +15,16 @@ class User implements CustomClass {
 
     @Override
     public int compareTo(CustomClass other) {
-        if (other instanceof User otherUser) {
-            return this.name.compareTo(otherUser.name); // Сравнение по имени пользователя
+        if (other instanceof User) {
+            User otherUser = (User) other;
+
+            // Сравниваем по имени
+            int result = this.name.compareTo(otherUser.name);
+            if (result == 0) {
+                // Если имена равны, сравниваем по email
+                result = this.email.compareTo(otherUser.email);
+            }
+            return result;
         }
         throw new ClassCastException("Невозможно сравнить объекты разных типов");
     }
@@ -28,11 +36,6 @@ class User implements CustomClass {
                 ", email='" + email + '\'' +
                 '}';
     }
-
-    public String getPassword() {
-        return password;
-    }
-
 
     public static class Builder {
         private String name;
