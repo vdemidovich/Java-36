@@ -10,9 +10,9 @@ interface CustomClass extends Comparable<CustomClass> {
 }
 
 class Bus implements CustomClass {
-    private final String number;
-    private final String model;
-    private final int mileage;
+    private String number;
+    private String model;
+    private int mileage;
 
     private Bus(Builder builder) {
         this.number = builder.number;
@@ -26,8 +26,20 @@ class Bus implements CustomClass {
 
     @Override
     public int compareTo(CustomClass other) {
-        if (other instanceof Bus otherBus) {
-            return this.number.compareTo(otherBus.number); // Сравнение по номеру автобуса
+        if (other instanceof Bus) {
+            Bus otherBus = (Bus) other;
+
+            // Сравниваем по номеру автобуса
+            int result = Integer.compare(this.number.hashCode(), otherBus.number.hashCode());
+            if (result == 0) {
+                // Если номера равны, сравниваем по модели
+                result = this.model.compareTo(otherBus.model);
+            }
+            if (result == 0) {
+                // Если модели равны, сравниваем по пробегу
+                result = Integer.compare(this.mileage, otherBus.mileage);
+            }
+            return result;
         }
         throw new ClassCastException("Невозможно сравнить объекты разных типов");
     }
@@ -68,9 +80,9 @@ class Bus implements CustomClass {
 }
 
 class User implements CustomClass {
-    private final String name;
-    private final String password;
-    private final String email;
+    private String name;
+    private String password;
+    private String email;
 
     private User(Builder builder) {
         this.name = builder.name;
@@ -84,8 +96,16 @@ class User implements CustomClass {
 
     @Override
     public int compareTo(CustomClass other) {
-        if (other instanceof User otherUser) {
-            return this.name.compareTo(otherUser.name); // Сравнение по имени пользователя
+        if (other instanceof User) {
+            User otherUser = (User) other;
+
+            // Сравниваем по имени
+            int result = this.name.compareTo(otherUser.name);
+            if (result == 0) {
+                // Если имена равны, сравниваем по email
+                result = this.email.compareTo(otherUser.email);
+            }
+            return result;
         }
         throw new ClassCastException("Невозможно сравнить объекты разных типов");
     }
@@ -97,11 +117,6 @@ class User implements CustomClass {
                 ", email='" + email + '\'' +
                 '}';
     }
-
-    public String getPassword() {
-        return password;
-    }
-
 
     public static class Builder {
         private String name;
@@ -129,11 +144,10 @@ class User implements CustomClass {
     }
 }
 
-
 class Student implements CustomClass {
-    private final int groupNumber;
-    private final double averageGrade;
-    private final int recordBookNumber;
+    private int groupNumber;
+    private double averageGrade;
+    private int recordBookNumber;
 
     private Student(Builder builder) {
         this.groupNumber = builder.groupNumber;
@@ -147,8 +161,20 @@ class Student implements CustomClass {
 
     @Override
     public int compareTo(CustomClass other) {
-        if (other instanceof Student otherStudent) {
-            return Integer.compare(this.recordBookNumber, otherStudent.recordBookNumber); // Сравнение по номеру зачетной книжки
+        if (other instanceof Student) {
+            Student otherStudent = (Student) other;
+
+            // Сравниваем по номеру зачетной книжки
+            int result = Integer.compare(this.recordBookNumber, otherStudent.recordBookNumber);
+            if (result == 0) {
+                // Если номера зачетных книжек равны, сравниваем по номеру группы
+                result = Integer.compare(this.groupNumber, otherStudent.groupNumber);
+            }
+            if (result == 0) {
+                // Если номера групп равны, сравниваем по среднему баллу
+                result = Double.compare(this.averageGrade, otherStudent.averageGrade);
+            }
+            return result;
         }
         throw new ClassCastException("Невозможно сравнить объекты разных типов");
     }
@@ -188,11 +214,11 @@ class Student implements CustomClass {
     }
 }
 
+
+
 interface SortStrategy<T extends CustomClass> {
     void sort(List<T> list);
 }
-
-
 
 class BubbleSort<T extends CustomClass> implements SortStrategy<T> {
     @Override
@@ -209,7 +235,6 @@ class BubbleSort<T extends CustomClass> implements SortStrategy<T> {
         }
     }
 }
-
 
 class QuickSort<T extends CustomClass> implements SortStrategy<T> {
     @Override
@@ -243,7 +268,6 @@ class QuickSort<T extends CustomClass> implements SortStrategy<T> {
     }
 }
 
-
 class BinarySearch {
     public static <T extends CustomClass> int search(List<T> list, T target) {
         int left = 0;
@@ -265,8 +289,6 @@ class BinarySearch {
         return -1;
     }
 }
-
-
 
 class Validator {
     public static String validateInput(Scanner scanner, String message) {
