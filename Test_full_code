@@ -1,0 +1,548 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+interface CustomClass extends Comparable<CustomClass> {
+    // Общие методы для всех кастомных классов можно добавить здесь.
+    default String getIdentifier() {
+        return this.toString(); // По умолчанию используем строковое представление объекта
+    }
+}
+
+class Bus implements CustomClass {
+    private final String number;
+    private final String model;
+    private final int mileage;
+
+    private Bus(Builder builder) {
+        this.number = builder.number;
+        this.model = builder.model;
+        this.mileage = builder.mileage;
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    @Override
+    public int compareTo(CustomClass other) {
+        if (other instanceof Bus otherBus) {
+            return this.number.compareTo(otherBus.number); // Сравнение по номеру автобуса
+        }
+        throw new ClassCastException("Невозможно сравнить объекты разных типов");
+    }
+
+    @Override
+    public String toString() {
+        return "Bus{" +
+                "number='" + number + '\'' +
+                ", model='" + model + '\'' +
+                ", mileage=" + mileage +
+                '}';
+    }
+
+    public static class Builder {
+        private String number;
+        private String model;
+        private int mileage;
+
+        public Builder number(String number) {
+            this.number = number;
+            return this;
+        }
+
+        public Builder model(String model) {
+            this.model = model;
+            return this;
+        }
+
+        public Builder mileage(int mileage) {
+            this.mileage = mileage;
+            return this;
+        }
+
+        public Bus build() {
+            return new Bus(this);
+        }
+    }
+}
+
+class User implements CustomClass {
+    private final String name;
+    private final String password;
+    private final String email;
+
+    private User(Builder builder) {
+        this.name = builder.name;
+        this.password = builder.password;
+        this.email = builder.email;
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    @Override
+    public int compareTo(CustomClass other) {
+        if (other instanceof User otherUser) {
+            return this.name.compareTo(otherUser.name); // Сравнение по имени пользователя
+        }
+        throw new ClassCastException("Невозможно сравнить объекты разных типов");
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                '}';
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+
+    public static class Builder {
+        private String name;
+        private String password;
+        private String email;
+
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder password(String password) {
+            this.password = password;
+            return this;
+        }
+
+        public Builder email(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public User build() {
+            return new User(this);
+        }
+    }
+}
+
+
+class Student implements CustomClass {
+    private final int groupNumber;
+    private final double averageGrade;
+    private final int recordBookNumber;
+
+    private Student(Builder builder) {
+        this.groupNumber = builder.groupNumber;
+        this.averageGrade = builder.averageGrade;
+        this.recordBookNumber = builder.recordBookNumber;
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    @Override
+    public int compareTo(CustomClass other) {
+        if (other instanceof Student otherStudent) {
+            return Integer.compare(this.recordBookNumber, otherStudent.recordBookNumber); // Сравнение по номеру зачетной книжки
+        }
+        throw new ClassCastException("Невозможно сравнить объекты разных типов");
+    }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "groupNumber=" + groupNumber +
+                ", averageGrade=" + averageGrade +
+                ", recordBookNumber=" + recordBookNumber +
+                '}';
+    }
+
+    public static class Builder {
+        private int groupNumber;
+        private double averageGrade;
+        private int recordBookNumber;
+
+        public Builder groupNumber(int groupNumber) {
+            this.groupNumber = groupNumber;
+            return this;
+        }
+
+        public Builder averageGrade(double averageGrade) {
+            this.averageGrade = averageGrade;
+            return this;
+        }
+
+        public Builder recordBookNumber(int recordBookNumber) {
+            this.recordBookNumber = recordBookNumber;
+            return this;
+        }
+
+        public Student build() {
+            return new Student(this);
+        }
+    }
+}
+
+interface SortStrategy<T extends CustomClass> {
+    void sort(List<T> list);
+}
+
+
+
+class BubbleSort<T extends CustomClass> implements SortStrategy<T> {
+    @Override
+    public void sort(List<T> list) {
+        int n = list.size();
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                if (list.get(j).compareTo(list.get(j + 1)) > 0) {
+                    T temp = list.get(j);
+                    list.set(j, list.get(j + 1));
+                    list.set(j + 1, temp);
+                }
+            }
+        }
+    }
+}
+
+
+class QuickSort<T extends CustomClass> implements SortStrategy<T> {
+    @Override
+    public void sort(List<T> list) {
+        quickSort(list, 0, list.size() - 1);
+    }
+
+    private void quickSort(List<T> list, int low, int high) {
+        if (low < high) {
+            int pivotIndex = partition(list, low, high);
+            quickSort(list, low, pivotIndex - 1);
+            quickSort(list, pivotIndex + 1, high);
+        }
+    }
+
+    private int partition(List<T> list, int low, int high) {
+        T pivot = list.get(high);
+        int i = low - 1;
+        for (int j = low; j < high; j++) {
+            if (list.get(j).compareTo(pivot) <= 0) {
+                i++;
+                T temp = list.get(i);
+                list.set(i, list.get(j));
+                list.set(j, temp);
+            }
+        }
+        T temp = list.get(i + 1);
+        list.set(i + 1, list.get(high));
+        list.set(high, temp);
+        return i + 1;
+    }
+}
+
+
+class BinarySearch {
+    public static <T extends CustomClass> int search(List<T> list, T target) {
+        int left = 0;
+        int right = list.size() - 1;
+
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            T midValue = list.get(mid);
+
+            if (midValue.compareTo(target) == 0) {
+                return mid;
+            } else if (midValue.compareTo(target) < 0) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+
+        return -1;
+    }
+}
+
+
+
+class Validator {
+    public static String validateInput(Scanner scanner, String message) {
+        System.out.print(message);
+        return scanner.nextLine().trim();
+    }
+
+    public static int validateIntInput(Scanner scanner, String message) {
+        while (true) {
+            try {
+                System.out.print(message);
+                return Integer.parseInt(scanner.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.out.println("Ошибка: введите целое число.");
+            }
+        }
+    }
+
+    public static double validateDoubleInput(Scanner scanner, String message) {
+        while (true) {
+            try {
+                System.out.print(message);
+                return Double.parseDouble(scanner.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.out.println("Ошибка: введите число.");
+            }
+        }
+    }
+
+    public static String validateEmail(Scanner scanner, String message) {
+        while (true) {
+            String email = validateInput(scanner, message);
+            if (email.matches("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}")) {
+                return email;
+            } else {
+                System.out.println("Ошибка: неверный формат email.");
+            }
+        }
+    }
+}
+
+
+class DataLoader {
+    public static List<CustomClass> loadData(Scanner scanner) {
+        System.out.println("Выберите способ заполнения данных:");
+        System.out.println("1. Ручной ввод");
+        System.out.println("2. Случайная генерация");
+        System.out.println("3. Загрузка из файла");
+        System.out.print("Введите номер: ");
+        int choice = scanner.nextInt();
+        scanner.nextLine(); // Clear input buffer
+
+        List<CustomClass> data = new ArrayList<>();
+
+        switch (choice) {
+            case 1:
+                data = manualInput(scanner);
+                break;
+            case 2:
+                data = randomGeneration(scanner);
+                break;
+            case 3:
+                data = fileLoading(scanner);
+                break;
+            default:
+                System.out.println("Неверный выбор. Данные не загружены.");
+        }
+
+        return data;
+    }
+
+    private static List<CustomClass> manualInput(Scanner scanner) {
+        List<CustomClass> data = new ArrayList<>();
+        System.out.print("Введите количество элементов: ");
+        int count = scanner.nextInt();
+        scanner.nextLine(); // Clear input buffer
+
+        for (int i = 0; i < count; i++) {
+            System.out.println("Добавление элемента " + (i + 1) + ":");
+            System.out.println("Выберите тип элемента:");
+            System.out.println("1. Автобус");
+            System.out.println("2. Пользователь");
+            System.out.println("3. Студент");
+            System.out.print("Введите номер: ");
+            int typeChoice = scanner.nextInt();
+            scanner.nextLine(); // Clear input buffer
+
+            CustomClass item = null;
+            switch (typeChoice) {
+                case 1:
+                    item = Bus.builder()
+                            .number(Validator.validateInput(scanner, "Введите номер автобуса: "))
+                            .model(Validator.validateInput(scanner, "Введите модель автобуса: "))
+                            .mileage(Validator.validateIntInput(scanner, "Введите пробег автобуса: "))
+                            .build();
+                    break;
+                case 2:
+                    item = User.builder()
+                            .name(Validator.validateInput(scanner, "Введите имя пользователя: "))
+                            .password(Validator.validateInput(scanner, "Введите пароль: "))
+                            .email(Validator.validateEmail(scanner, "Введите email: "))
+                            .build();
+                    break;
+                case 3:
+                    item = Student.builder()
+                            .groupNumber(Validator.validateIntInput(scanner, "Введите номер группы: "))
+                            .averageGrade(Validator.validateDoubleInput(scanner, "Введите средний балл: "))
+                            .recordBookNumber(Validator.validateIntInput(scanner, "Введите номер зачетной книжки: "))
+                            .build();
+                    break;
+                default:
+                    System.out.println("Неверный выбор. Элемент пропущен.");
+            }
+
+            if (item != null) {
+                data.add(item);
+            }
+        }
+
+        return data;
+    }
+
+    private static List<CustomClass> randomGeneration(Scanner scanner) {
+        List<CustomClass> data = new ArrayList<>();
+        System.out.print("Введите количество элементов: ");
+        int count = scanner.nextInt();
+        scanner.nextLine(); // Clear input buffer
+
+        for (int i = 0; i < count; i++) {
+            int type = (int) (Math.random() * 3) + 1;
+            CustomClass item = null;
+
+            switch (type) {
+                case 1:
+                    item = Bus.builder()
+                            .number("Bus" + (int) (Math.random() * 100))
+                            .model("Model" + (int) (Math.random() * 10))
+                            .mileage((int) (Math.random() * 100000))
+                            .build();
+                    break;
+                case 2:
+                    item = User.builder()
+                            .name("User" + (int) (Math.random() * 100))
+                            .password("Pass" + (int) (Math.random() * 100))
+                            .email("user" + (int) (Math.random() * 100) + "@example.com")
+                            .build();
+                    break;
+                case 3:
+                    item = Student.builder()
+                            .groupNumber((int) (Math.random() * 10))
+                            .averageGrade(Math.random() * 5)
+                            .recordBookNumber((int) (Math.random() * 1000))
+                            .build();
+                    break;
+            }
+
+            if (item != null) {
+                data.add(item);
+            }
+        }
+
+        return data;
+    }
+
+    private static List<CustomClass> fileLoading(Scanner scanner) {
+        // Реализация загрузки из файла
+        System.out.println("Загрузка из файла пока не реализована.");
+        return new ArrayList<>();
+    }
+}
+
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        List<CustomClass> data = new ArrayList<>();
+        boolean running = true;
+
+        while (running) {
+            System.out.println("=== Меню ===");
+            System.out.println("1. Заполнить массив данных");
+            System.out.println("2. Отсортировать данные");
+            System.out.println("3. Найти элемент через бинарный поиск");
+            System.out.println("4. Выйти из программы");
+            System.out.print("Выберите действие: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Clear input buffer
+
+            switch (choice) {
+                case 1:
+                    data = DataLoader.loadData(scanner);
+                    break;
+                case 2:
+                    if (data.isEmpty()) {
+                        System.out.println("Сначала заполните массив данных!");
+                        break;
+                    }
+                    SortStrategy strategy = chooseSortingStrategy(scanner);
+                    strategy.sort(data);
+                    System.out.println("Данные успешно отсортированы.");
+                    break;
+                case 3:
+                    if (data.isEmpty()) {
+                        System.out.println("Сначала заполните массив данных!");
+                        break;
+                    }
+                    CustomClass searchItem = createCustomClass(scanner);
+                    int index = BinarySearch.search(data, searchItem);
+                    if (index != -1) {
+                        System.out.println("Элемент найден на позиции: " + index);
+                    } else {
+                        System.out.println("Элемент не найден.");
+                    }
+                    break;
+                case 4:
+                    running = false;
+                    System.out.println("Выход из программы...");
+                    break;
+                default:
+                    System.out.println("Неверный выбор. Попробуйте снова.");
+            }
+        }
+
+        scanner.close();
+    }
+
+    private static SortStrategy chooseSortingStrategy(Scanner scanner) {
+        System.out.println("Выберите метод сортировки:");
+        System.out.println("1. Bubble Sort");
+        System.out.println("2. Quick Sort");
+        System.out.print("Введите номер: ");
+        int choice = scanner.nextInt();
+        scanner.nextLine(); // Clear input buffer
+
+        switch (choice) {
+            case 1:
+                return new BubbleSort<>();
+            case 2:
+                return new QuickSort<>();
+            default:
+                System.out.println("Неверный выбор. Используется Bubble Sort по умолчанию.");
+                return new BubbleSort<>();
+        }
+    }
+
+    private static CustomClass createCustomClass(Scanner scanner) {
+        System.out.println("Выберите тип элемента для поиска:");
+        System.out.println("1. Автобус");
+        System.out.println("2. Пользователь");
+        System.out.println("3. Студент");
+        System.out.print("Введите номер: ");
+        int choice = scanner.nextInt();
+        scanner.nextLine(); // Clear input buffer
+
+        switch (choice) {
+            case 1:
+                return Bus.builder()
+                        .number(Validator.validateInput(scanner, "Введите номер автобуса: "))
+                        .model(Validator.validateInput(scanner, "Введите модель автобуса: "))
+                        .mileage(Validator.validateIntInput(scanner, "Введите пробег автобуса: "))
+                        .build();
+            case 2:
+                return User.builder()
+                        .name(Validator.validateInput(scanner, "Введите имя пользователя: "))
+                        .password(Validator.validateInput(scanner, "Введите пароль: "))
+                        .email(Validator.validateEmail(scanner, "Введите email: "))
+                        .build();
+            case 3:
+                return Student.builder()
+                        .groupNumber(Validator.validateIntInput(scanner, "Введите номер группы: "))
+                        .averageGrade(Validator.validateDoubleInput(scanner, "Введите средний балл: "))
+                        .recordBookNumber(Validator.validateIntInput(scanner, "Введите номер зачетной книжки: "))
+                        .build();
+            default:
+                System.out.println("Неверный выбор. Элемент не создан.");
+                return null;
+        }
+    }
+}
