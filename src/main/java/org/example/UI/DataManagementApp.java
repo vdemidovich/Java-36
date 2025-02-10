@@ -6,12 +6,12 @@ import java.io.*;
 import java.util.*;
 
 public class DataManagementApp extends JFrame {
-    private Object[] data = new Object[0]; // Массив для хранения объектов разных типов
+    private Object[] data = new Object[0];
     private JTextArea outputArea;
     private JComboBox<String> sortFieldComboBox;
     private JComboBox<String> dataSourceComboBox;
-    private JComboBox<String> dataTypeComboBox; // Выпадающий список для выбора типа данных
-    private JComboBox<String> sortParameterComboBox; // Выпадающий список для выбора параметра сортировки
+    private JComboBox<String> dataTypeComboBox; 
+    private JComboBox<String> sortParameterComboBox;
 
     public DataManagementApp() {
         data = new Object[0];
@@ -21,7 +21,7 @@ public class DataManagementApp extends JFrame {
         setLayout(new BorderLayout());
 
         JPanel controlPanel = new JPanel();
-        controlPanel.setLayout(new GridLayout(5, 2)); // Увеличили количество строк для нового элемента
+        controlPanel.setLayout(new GridLayout(5, 2));
 
         JButton sortButton = new JButton("Sort");
         JButton searchButton = new JButton("Search");
@@ -31,13 +31,11 @@ public class DataManagementApp extends JFrame {
         String[] dataSources = {"File", "Manual Input", "Random"};
         dataSourceComboBox = new JComboBox<>(dataSources);
 
-        String[] dataTypes = {"Bus", "User", "Student"}; // Список типов данных
+        String[] dataTypes = {"Bus", "User", "Student"};
         dataTypeComboBox = new JComboBox<>(dataTypes);
 
-        // Выпадающий список для параметров сортировки (изначально пустой)
         sortParameterComboBox = new JComboBox<>();
 
-        // Обновляем параметры сортировки при выборе типа данных
         dataTypeComboBox.addActionListener(e -> updateSortParameters());
 
         controlPanel.add(sortButton);
@@ -55,14 +53,12 @@ public class DataManagementApp extends JFrame {
         add(controlPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
 
-        // Вызов нужных методов
         sortButton.addActionListener(e -> sortData());
         searchButton.addActionListener(e -> searchData());
         inputButton.addActionListener(e -> inputData());
         exitButton.addActionListener(e -> System.exit(0));
     }
 
-    // Обновление параметров сортировки в зависимости от выбранного типа данных
     private void updateSortParameters() {
         String dataType = (String) dataTypeComboBox.getSelectedItem();
         String[] parameters;
@@ -85,18 +81,15 @@ public class DataManagementApp extends JFrame {
         sortParameterComboBox.setModel(new DefaultComboBoxModel<>(parameters));
     }
 
-    // Вспомогательный метод для увеличения размера массива
     private Object[] resizeArray(Object[] array, int newSize) {
         return Arrays.copyOf(array, newSize);
     }
 
-    // Вспомогательный метод для добавления элемента в массив
     private void addToArray(Object element) {
         data = resizeArray(data, data.length + 1);
         data[data.length - 1] = element;
     }
 
-    // Метод для сортировки данных
     private void sortData() {
         if (data.length == 0) {
             JOptionPane.showMessageDialog(this, "No data to sort.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -121,7 +114,6 @@ public class DataManagementApp extends JFrame {
         displayData();
     }
 
-    // Сравнение автобусов по выбранному параметру
     private int compareBuses(Bus a, Bus b, String parameter) {
         switch (parameter) {
             case "Number":
@@ -135,7 +127,6 @@ public class DataManagementApp extends JFrame {
         }
     }
 
-    // Сравнение пользователей по выбранному параметру
     private int compareUsers(User a, User b, String parameter) {
         switch (parameter) {
             case "Name":
@@ -149,7 +140,6 @@ public class DataManagementApp extends JFrame {
         }
     }
 
-    // Сравнение студентов по выбранному параметру
     private int compareStudents(Student a, Student b, String parameter) {
         switch (parameter) {
             case "Group Number":
@@ -163,7 +153,6 @@ public class DataManagementApp extends JFrame {
         }
     }
 
-    // Метод для поиска данных
     private void searchData() {
         String searchTerm = JOptionPane.showInputDialog(this, "Enter search term:");
         if (searchTerm != null && !searchTerm.isEmpty()) {
@@ -174,7 +163,6 @@ public class DataManagementApp extends JFrame {
         }
     }
 
-    // Метод для ввода данных
     private void inputData() {
         String source = (String) dataSourceComboBox.getSelectedItem();
         String dataType = (String) dataTypeComboBox.getSelectedItem();
@@ -192,7 +180,6 @@ public class DataManagementApp extends JFrame {
         }
     }
 
-    // Метод для загрузки данных из файла
     private void loadFromFile() {
         JFileChooser fileChooser = new JFileChooser();
         int result = fileChooser.showOpenDialog(this);
@@ -211,7 +198,7 @@ public class DataManagementApp extends JFrame {
         }
     }
 
-    // Метод для ручного ввода данных
+
     private void manualInput(String dataType) {
         switch (dataType) {
             case "Bus":
@@ -236,7 +223,6 @@ public class DataManagementApp extends JFrame {
         displayData();
     }
 
-    // Метод для генерации случайных данных
     private void generateRandomData(String dataType) {
         Random random = new Random();
         switch (dataType) {
@@ -268,7 +254,6 @@ public class DataManagementApp extends JFrame {
         displayData();
     }
 
-    // Метод для отображения данных
     private void displayData() {
         outputArea.setText("");
         for (Object item : data) {
@@ -276,7 +261,6 @@ public class DataManagementApp extends JFrame {
         }
     }
 
-    // Метод для отображения результатов поиска
     private void displaySearchResults(Object[] results) {
         outputArea.setText("");
         for (Object item : results) {
@@ -284,7 +268,6 @@ public class DataManagementApp extends JFrame {
         }
     }
 
-    // Точка входа в программу
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             DataManagementApp app = new DataManagementApp();
@@ -293,7 +276,7 @@ public class DataManagementApp extends JFrame {
     }
 }
 
-// Класс Автобус
+
 class Bus {
     private String number;
     private String model;
@@ -323,7 +306,7 @@ class Bus {
     }
 }
 
-// Класс Пользователь
+
 class User {
     private String name;
     private String password;
@@ -353,7 +336,6 @@ class User {
     }
 }
 
-// Класс Студент
 class Student {
     private String groupNumber;
     private double averageGrade;
