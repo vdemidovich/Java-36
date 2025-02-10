@@ -2,7 +2,7 @@ package org.example.models;
 
 import java.util.Comparator;
 
-public class Student implements Comparable<Student> {
+public class Student implements Sortable<Student> {
     private final int groupNumber;
     private final double averageScore;
     private final String recordBookNumber;
@@ -33,7 +33,14 @@ public class Student implements Comparable<Student> {
 
     @Override
     public int compareTo(Student o) {
-        return Double.compare(this.averageScore, o.averageScore);
+        int result = Double.compare(this.averageScore, o.averageScore);
+        if (result == 0) {
+            result = Integer.compare(this.groupNumber, o.groupNumber);
+        }
+        if (result == 0) {
+            result = this.recordBookNumber.compareTo(o.recordBookNumber);
+        }
+        return result;
     }
 
     public static class StudentGroupNumberComparator implements Comparator<Student> {
