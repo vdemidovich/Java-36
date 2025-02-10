@@ -2,7 +2,7 @@ package org.example.models;
 
 import java.util.Comparator;
 
-public class Bus implements Comparable<Bus> {
+public class Bus implements Sortable<Bus> {
     private final int number;
     private final String model;
     private final double mileage;
@@ -31,8 +31,15 @@ public class Bus implements Comparable<Bus> {
     }
 
     @Override
-    public int compareTo(Bus o) {
-        return this.number - o.number;
+    public int compareTo(Bus other) {
+        int result = Integer.compare(this.number, other.number);
+        if (result == 0) {
+            result = this.model.compareTo(other.model);
+        }
+        if (result == 0) {
+            result = Double.compare(this.mileage, other.mileage);
+        }
+        return result;
     }
 
     public static class BusNumberComparator implements Comparator<Bus> {

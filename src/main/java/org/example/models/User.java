@@ -2,7 +2,7 @@ package org.example.models;
 
 import java.util.Comparator;
 
-public class User implements Comparable<User> {
+public class User implements Sortable<User> {
     private final String name;
     private final String password;
     private final String email;
@@ -32,7 +32,14 @@ public class User implements Comparable<User> {
 
     @Override
     public int compareTo(User o) {
-        return this.name.compareTo(o.name);
+        int result = this.name.compareTo(o.name);
+        if (result == 0) {
+            result = this.email.compareTo(o.email);
+        }
+        if (result == 0) {
+            result = this.password.compareTo(o.password);
+        }
+        return result;
     }
 
     public static class UserNameComparator implements Comparator<User> {
