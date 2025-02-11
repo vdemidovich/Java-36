@@ -1,0 +1,37 @@
+public class SelectionSort<T> {
+    // Метод для сортировки массива
+    public void sort(T[] array, java.util.Comparator<? super T> comparator) {
+        int n = array.length;
+        for (int i = 0; i < n - 1; i++) {
+            int minIndex = i;
+            for (int j = i + 1; j < n; j++) {
+                if (comparator.compare(array[j], array[minIndex]) < 0) {
+                    minIndex = j;
+                }
+            }
+            if (minIndex != i) {
+                T temp = array[i];
+                array[i] = array[minIndex];
+                array[minIndex] = temp;
+            }
+        }
+    }
+
+    // Метод для сортировки списка
+    public void sort(java.util.List<T> list, java.util.Comparator<? super T> comparator) {
+        int n = list.size();
+        for (int i = 0; i < n - 1; i++) {
+            int minIndex = i;
+            for (int j = i + 1; j < n; j++) {
+                if (comparator.compare(list.get(j), list.get(minIndex)) < 0) {
+                    minIndex = j;
+                }
+            }
+            if (minIndex != i) {
+                T temp = list.get(i);
+                list.set(i, list.get(minIndex));
+                list.set(minIndex, temp);
+            }
+        }
+    }
+}
