@@ -1,4 +1,13 @@
-package main.java.org.example.UI;
+package org.example.UI;
+
+import org.example.file.*;
+import org.example.generator.BusGenerator;
+import org.example.generator.StudentGenerator;
+import org.example.generator.UserGenerator;
+import org.example.models.Bus;
+import org.example.models.Student;
+import org.example.models.User;
+import org.example.sorting.SelectionSort;
 
 import javax.swing.*;
 import java.awt.*;
@@ -6,11 +15,15 @@ import java.io.*;
 import java.util.*;
 
 public class DataManagementApp extends JFrame {
+
+    private static final String[] DATA_SOURCES = {"File", "Manual Input", "Random"};
+    private static final String[] DATA_TYPES = {"Bus", "User", "Student"};
+
     private Object[] data = new Object[0];
     private JTextArea outputArea;
     private JComboBox<String> sortFieldComboBox;
     private JComboBox<String> dataSourceComboBox;
-    private JComboBox<String> dataTypeComboBox; 
+    private JComboBox<String> dataTypeComboBox;
     private JComboBox<String> sortParameterComboBox;
 
     public DataManagementApp() {
@@ -28,12 +41,8 @@ public class DataManagementApp extends JFrame {
         JButton inputButton = new JButton("Input Data");
         JButton exitButton = new JButton("Exit");
 
-        String[] dataSources = {"File", "Manual Input", "Random"};
-        dataSourceComboBox = new JComboBox<>(dataSources);
-
-        String[] dataTypes = {"Bus", "User", "Student"};
-        dataTypeComboBox = new JComboBox<>(dataTypes);
-
+        dataSourceComboBox = new JComboBox<>(DATA_SOURCES);
+        dataTypeComboBox = new JComboBox<>(DATA_TYPES);
         sortParameterComboBox = new JComboBox<>();
 
         dataTypeComboBox.addActionListener(e -> updateSortParameters());
@@ -101,56 +110,26 @@ public class DataManagementApp extends JFrame {
 
         switch (dataType) {
             case "Bus":
-                Arrays.sort(data, (a, b) -> compareBuses((Bus) a, (Bus) b, parameter));
+                Bus[] buses = Arrays.copyOf(data, data.length, Bus[].class);
+                SelectionSort<Bus> busSorter = new SelectionSort<>();
+                busSorter.sort(buses); // сортировка по умолчанию(все 3 поля)
+                data = buses;
                 break;
             case "User":
-                Arrays.sort(data, (a, b) -> compareUsers((User) a, (User) b, parameter));
+                User[] users = Arrays.copyOf(data, data.length, User[].class);
+                SelectionSort<User> userSorter = new SelectionSort<>();
+                userSorter.sort(users);
+                data = users;
                 break;
             case "Student":
-                Arrays.sort(data, (a, b) -> compareStudents((Student) a, (Student) b, parameter));
+                Student[] students = Arrays.copyOf(data, data.length, Student[].class);
+                SelectionSort<Student> studentSorter = new SelectionSort<>();
+                studentSorter.sort(students);
+                data = students;
                 break;
         }
 
         displayData();
-    }
-
-    private int compareBuses(Bus a, Bus b, String parameter) {
-        switch (parameter) {
-            case "Number":
-                return a.getNumber().compareTo(b.getNumber());
-            case "Model":
-                return a.getModel().compareTo(b.getModel());
-            case "Mileage":
-                return Integer.compare(a.getMileage(), b.getMileage());
-            default:
-                return 0;
-        }
-    }
-
-    private int compareUsers(User a, User b, String parameter) {
-        switch (parameter) {
-            case "Name":
-                return a.getName().compareTo(b.getName());
-            case "Password":
-                return a.getPassword().compareTo(b.getPassword());
-            case "Email":
-                return a.getEmail().compareTo(b.getEmail());
-            default:
-                return 0;
-        }
-    }
-
-    private int compareStudents(Student a, Student b, String parameter) {
-        switch (parameter) {
-            case "Group Number":
-                return a.getGroupNumber().compareTo(b.getGroupNumber());
-            case "Average Grade":
-                return Double.compare(a.getAverageGrade(), b.getAverageGrade());
-            case "Record Book Number":
-                return a.getRecordBookNumber().compareTo(b.getRecordBookNumber());
-            default:
-                return 0;
-        }
     }
 
     private void searchData() {
@@ -187,10 +166,20 @@ public class DataManagementApp extends JFrame {
             File selectedFile = fileChooser.getSelectedFile();
             try (BufferedReader reader = new BufferedReader(new FileReader(selectedFile))) {
                 data = new Object[0]; // Очистка массива
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    addToArray(line);
+                int maxSize = 1000;
+                String dataType = (String) dataTypeComboBox.getSelectedItem();
+
+                if (dataType == null) {
+                    JOptionPane.showMessageDialog(this, "Please select a valid data type.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
                 }
+
+                Object[] loadedData = loadDataForType(selectedFile.getAbsolutePath(), dataType, maxSize);
+                if (loadedData != null) {
+                    data = loadedData;
+                    displayData();
+                }
+
                 displayData();
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(this, "Error reading file: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -198,26 +187,66 @@ public class DataManagementApp extends JFrame {
         }
     }
 
+    private Object[] loadDataForType(String filePath, String dataType, int maxSize) {
+        switch (dataType) {
+            case "Bus":
+                Bus[] buses = DataLoader.loadFromFile(filePath, maxSize, new BusMapper(), Bus.class);
+                return buses;
+
+            case "User":
+                User[] users = DataLoader.loadFromFile(filePath, maxSize, new UserMapper(), User.class);
+                return users;
+
+            case "Student":
+                Student[] students = DataLoader.loadFromFile(filePath, maxSize, new StudentMapper(), Student.class);
+                return students;
+
+            default:
+                JOptionPane.showMessageDialog(this, "Unsupported data type: " + dataType, "Error", JOptionPane.ERROR_MESSAGE);
+                return null;
+        }
+    }
+
 
     private void manualInput(String dataType) {
         switch (dataType) {
             case "Bus":
-                String busNumber = JOptionPane.showInputDialog(this, "Enter Bus Number:");
-                String busModel = JOptionPane.showInputDialog(this, "Enter Bus Model:");
-                int busMileage = Integer.parseInt(JOptionPane.showInputDialog(this, "Enter Bus Mileage:"));
-                addToArray(new Bus(busNumber, busModel, busMileage));
+                try {
+                    int busNumber = Integer.parseInt(JOptionPane.showInputDialog(this, "Enter Bus Number:"));
+                    String busModel = JOptionPane.showInputDialog(this, "Enter Bus Model:");
+                    double busMileage = Double.parseDouble(JOptionPane.showInputDialog(this, "Enter Bus Mileage:"));
+                    addToArray(new Bus.BusBuilder()
+                            .setNumber(busNumber)
+                            .setModel(busModel)
+                            .setMileage(busMileage)
+                            .build());
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(this, "Invalid input!", "Error", JOptionPane.ERROR_MESSAGE);
+                }
                 break;
             case "User":
                 String userName = JOptionPane.showInputDialog(this, "Enter User Name:");
                 String userPassword = JOptionPane.showInputDialog(this, "Enter User Password:");
                 String userEmail = JOptionPane.showInputDialog(this, "Enter User Email:");
-                addToArray(new User(userName, userPassword, userEmail));
+                addToArray(new User.UserBuilder()
+                        .setName(userName)
+                        .setPassword(userPassword)
+                        .setEmail(userEmail)
+                        .build());
                 break;
             case "Student":
-                String groupNumber = JOptionPane.showInputDialog(this, "Enter Group Number:");
-                double averageGrade = Double.parseDouble(JOptionPane.showInputDialog(this, "Enter Average Grade:"));
-                String recordBookNumber = JOptionPane.showInputDialog(this, "Enter Record Book Number:");
-                addToArray(new Student(groupNumber, averageGrade, recordBookNumber));
+                try {
+                    int groupNumber = Integer.parseInt(JOptionPane.showInputDialog(this, "Enter Group Number:"));
+                    double averageGrade = Double.parseDouble(JOptionPane.showInputDialog(this, "Enter Average Grade:"));
+                    String recordBookNumber = JOptionPane.showInputDialog(this, "Enter Record Book Number:");
+                    addToArray(new Student.StudentBuilder()
+                            .setGroupNumber(groupNumber)
+                            .setAverageScore(averageGrade)
+                            .setRecordBookNumber(recordBookNumber)
+                            .build());
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(this, "Invalid input!", "Error", JOptionPane.ERROR_MESSAGE);
+                }
                 break;
         }
         displayData();
@@ -227,27 +256,21 @@ public class DataManagementApp extends JFrame {
         Random random = new Random();
         switch (dataType) {
             case "Bus":
+                BusGenerator busGenerator = new BusGenerator();
                 for (int i = 0; i < 10; i++) {
-                    String number = "Bus" + random.nextInt(100);
-                    String model = "Model" + random.nextInt(10);
-                    int mileage = random.nextInt(100000);
-                    addToArray(new Bus(number, model, mileage));
+                    addToArray(busGenerator.generate());
                 }
                 break;
             case "User":
+                UserGenerator userGenerator = new UserGenerator();
                 for (int i = 0; i < 10; i++) {
-                    String name = "User" + random.nextInt(100);
-                    String password = "Pass" + random.nextInt(1000);
-                    String email = "user" + random.nextInt(100) + "@example.com";
-                    addToArray(new User(name, password, email));
+                    addToArray(userGenerator.generate());
                 }
                 break;
             case "Student":
+                StudentGenerator studentGenerator = new StudentGenerator();
                 for (int i = 0; i < 10; i++) {
-                    String groupNumber = "Group" + random.nextInt(10);
-                    double averageGrade = 2 + random.nextDouble() * 3; // Оценка от 2 до 5
-                    String recordBookNumber = "RB" + random.nextInt(1000);
-                    addToArray(new Student(groupNumber, averageGrade, recordBookNumber));
+                    addToArray(studentGenerator.generate());
                 }
                 break;
         }
@@ -276,91 +299,3 @@ public class DataManagementApp extends JFrame {
     }
 }
 
-
-class Bus {
-    private String number;
-    private String model;
-    private int mileage;
-
-    public Bus(String number, String model, int mileage) {
-        this.number = number;
-        this.model = model;
-        this.mileage = mileage;
-    }
-
-    public String getNumber() {
-        return number;
-    }
-
-    public String getModel() {
-        return model;
-    }
-
-    public int getMileage() {
-        return mileage;
-    }
-
-    @Override
-    public String toString() {
-        return "Bus: " + number + ", " + model + ", " + mileage + " km";
-    }
-}
-
-
-class User {
-    private String name;
-    private String password;
-    private String email;
-
-    public User(String name, String password, String email) {
-        this.name = name;
-        this.password = password;
-        this.email = email;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    @Override
-    public String toString() {
-        return "User: " + name + ", " + email;
-    }
-}
-
-class Student {
-    private String groupNumber;
-    private double averageGrade;
-    private String recordBookNumber;
-
-    public Student(String groupNumber, double averageGrade, String recordBookNumber) {
-        this.groupNumber = groupNumber;
-        this.averageGrade = averageGrade;
-        this.recordBookNumber = recordBookNumber;
-    }
-
-    public String getGroupNumber() {
-        return groupNumber;
-    }
-
-    public double getAverageGrade() {
-        return averageGrade;
-    }
-
-    public String getRecordBookNumber() {
-        return recordBookNumber;
-    }
-
-    @Override
-    public String toString() {
-        return "Student: " + groupNumber + ", " + averageGrade + ", " + recordBookNumber;
-    }
-}
