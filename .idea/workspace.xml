@@ -4,10 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="58842580-497f-4438-94e8-1afbb7100e1b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+    <list default="true" id="58842580-497f-4438-94e8-1afbb7100e1b" name="Changes" comment="fix: corrected data type change issue">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/UI/DataManagementApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/UI/DataManagementApp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/models/Bus.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/models/Bus.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/models/Student.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/models/Student.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/models/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/models/User.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -90,11 +91,15 @@
       <option name="presentableId" value="Default" />
       <updated>1739122350485</updated>
       <workItem from="1739122352454" duration="419000" />
-      <workItem from="1739285104071" duration="694000" />
+      <workItem from="1739285104071" duration="3083000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="fix: corrected data type change issue" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix: corrected data type change issue" />
   </component>
 </project>
