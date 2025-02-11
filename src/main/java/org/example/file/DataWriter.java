@@ -13,7 +13,7 @@ public class DataWriter {
 
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
                 for (Object item : array) {
-                    writer.write(item + " ");
+                    writer.write((String) item);
                     writer.newLine();
                 }
             }
