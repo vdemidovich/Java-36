@@ -86,15 +86,6 @@ public class Student implements Sortable<Student> {
         }
 
         public Student build() {
-            if (this.groupNumber < 1) {
-                throw new IllegalArgumentException("Group number cannot be < 1");
-            }
-            if (this.recordBookNumber == null || this.recordBookNumber.isEmpty()) {
-                throw new IllegalArgumentException("RecordBookNumber cannot be null or empty");
-            }
-            if (this.averageScore < 0) {
-                throw new IllegalArgumentException("AverageScore cannot be negative");
-            }
             return new Student(this);
         }
     }
