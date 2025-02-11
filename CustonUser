@@ -1,0 +1,70 @@
+import java.util.Comparator;
+import java.util.function.ToIntFunction;
+
+class SelectionSort<T> {
+    // Метод для сортировки массива по умолчанию (использует compareTo)
+    public void sort(T[] array) {
+        for (int i = 0; i < array.length - 1; i++) {
+            int minIndex = i;
+            for (int j = i + 1; j < array.length; j++) {
+                if (((Comparable<T>) array[j]).compareTo(array[minIndex]) < 0) {
+                    minIndex = j;
+                }
+            }
+            T temp = array[minIndex];
+            array[minIndex] = array[i];
+            array[i] = temp;
+        }
+    }
+
+    // Метод для кастомной сортировки массива (использует компаратор)
+    public void sort(T[] array, Comparator<T> comparator) {
+        for (int i = 0; i < array.length - 1; i++) {
+            int minIndex = i;
+            for (int j = i + 1; j < array.length; j++) {
+                if (comparator.compare(array[j], array[minIndex]) < 0) {
+                    minIndex = j;
+                }
+            }
+            T temp = array[minIndex];
+            array[minIndex] = array[i];
+            array[i] = temp;
+        }
+    }
+
+public class Main {
+    public static void main(String[] args) {
+        // Создаем массив пользователей
+        User[] users = {
+            new User("Alice", "alice@example.com"),
+            new User("Bob", "bob@example.com"),
+            new User("Charlie", "charlie@example.com"),
+            new User("David", "david@example.com"),
+            new User("Eve", "eve@example.com")
+        };
+
+        // Создаем экземпляр SelectionSort
+        SelectionSort<User> userSorter = new SelectionSort<>();
+
+        // Выводим массив до сортировки
+        System.out.println("=== Before Sorting Users ===");
+        printArray(users);
+
+        // Сортировка пользователей с учетом четности длины имени
+        userSorter.sortWithEvenLogic(
+            users,
+            user -> user.getName().length(), // Извлекаем число (длина имени)
+            Comparator.comparingInt(user -> user.getName().length()) // Сравниваем по длине имени
+        );
+
+        System.out.println("\n=== After Custom Sorting Users (even name length first) ===");
+        printArray(users);
+    }
+
+    // Универсальный метод для вывода массива
+    public static <T> void printArray(T[] array) {
+        for (T item : array) {
+            System.out.println(item);
+        }
+    }
+}
