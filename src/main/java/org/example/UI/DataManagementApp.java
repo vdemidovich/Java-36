@@ -19,7 +19,7 @@ public class DataManagementApp extends JFrame {
     private static final String[] DATA_SOURCES = {"File", "Manual Input", "Random"};
     private static final String[] DATA_TYPES = {"Bus", "User", "Student"};
 
-    private Object[] data = new Object[0];
+    private Object[] data;
     private JTextArea outputArea;
     private JComboBox<String> sortFieldComboBox;
     private JComboBox<String> dataSourceComboBox;
@@ -71,6 +71,7 @@ public class DataManagementApp extends JFrame {
     private void updateSortParameters() {
         String dataType = (String) dataTypeComboBox.getSelectedItem();
         String[] parameters;
+        data = new Object[0];
 
         switch (dataType) {
             case "Bus":
