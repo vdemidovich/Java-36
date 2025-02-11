@@ -130,6 +130,7 @@ public class DataManagementApp extends JFrame {
                 break;
         }
 
+        writeToFile(data);
         displayData();
     }
 
@@ -140,6 +141,7 @@ public class DataManagementApp extends JFrame {
                     .filter(s -> s.toString().toLowerCase().contains(searchTerm.toLowerCase()))
                     .toArray();
             displaySearchResults(results);
+            writeToFile(results);
         }
     }
 
@@ -186,6 +188,10 @@ public class DataManagementApp extends JFrame {
                 JOptionPane.showMessageDialog(this, "Error reading file: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
+    }
+
+    private void writeToFile(Object[] data) {
+        DataWriter.writeArrayToFile(data, "src/main/java/org/example/file/results.txt");
     }
 
     private Object[] loadDataForType(String filePath, String dataType, int maxSize) {
