@@ -1,4 +1,4 @@
-package BinarySearch;
+package org.example.search;
 
 import org.example.models.Bus;
 import org.example.sorting.SelectionSort;

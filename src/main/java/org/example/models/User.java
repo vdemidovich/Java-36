@@ -85,15 +85,6 @@ public class User implements Sortable<User> {
         }
 
         public User build() {
-            if (this.name == null || this.name.isEmpty()) {
-                throw new IllegalArgumentException("Name cannot be null or empty");
-            }
-            if (this.password == null || this.password.isEmpty()) {
-                throw new IllegalArgumentException("Password cannot be null or empty");
-            }
-            if (this.email == null || this.email.isEmpty()) {
-                throw new IllegalArgumentException("Email cannot be null or empty");
-            }
             return new User(this);
         }
     }
