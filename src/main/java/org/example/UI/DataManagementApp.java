@@ -25,6 +25,7 @@ public class DataManagementApp extends JFrame {
     private JComboBox<String> dataSourceComboBox;
     private JComboBox<String> dataTypeComboBox;
     private JComboBox<String> sortParameterComboBox;
+    private JTextField arraySizeField; // Поле для ввода длины массива
 
     public DataManagementApp() {
         data = new Object[0];
@@ -34,7 +35,7 @@ public class DataManagementApp extends JFrame {
         setLayout(new BorderLayout());
 
         JPanel controlPanel = new JPanel();
-        controlPanel.setLayout(new GridLayout(5, 2));
+        controlPanel.setLayout(new GridLayout(6, 2)); // Увеличили количество строк для нового элемента
 
         JButton sortButton = new JButton("Sort");
         JButton searchButton = new JButton("Search");
@@ -44,6 +45,7 @@ public class DataManagementApp extends JFrame {
         dataSourceComboBox = new JComboBox<>(DATA_SOURCES);
         dataTypeComboBox = new JComboBox<>(DATA_TYPES);
         sortParameterComboBox = new JComboBox<>();
+        arraySizeField = new JTextField("10"); // По умолчанию длина массива 10
 
         dataTypeComboBox.addActionListener(e -> updateSortParameters());
 
@@ -53,6 +55,8 @@ public class DataManagementApp extends JFrame {
         controlPanel.add(dataSourceComboBox);
         controlPanel.add(inputButton);
         controlPanel.add(dataTypeComboBox);
+        controlPanel.add(new JLabel("Array Size:"));
+        controlPanel.add(arraySizeField);
         controlPanel.add(exitButton);
 
         outputArea = new JTextArea();
@@ -100,6 +104,15 @@ public class DataManagementApp extends JFrame {
         data[data.length - 1] = element;
     }
 
+    private int getArraySize() {
+        try {
+            return Integer.parseInt(arraySizeField.getText());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Invalid array size! Using default size 10.", "Error", JOptionPane.ERROR_MESSAGE);
+            return 10; // Возвращаем значение по умолчанию
+        }
+    }
+
     private void sortData() {
         if (data.length == 0) {
             JOptionPane.showMessageDialog(this, "No data to sort.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -130,7 +143,6 @@ public class DataManagementApp extends JFrame {
                 break;
         }
 
-        writeToFile(data);
         displayData();
     }
 
@@ -148,28 +160,28 @@ public class DataManagementApp extends JFrame {
     private void inputData() {
         String source = (String) dataSourceComboBox.getSelectedItem();
         String dataType = (String) dataTypeComboBox.getSelectedItem();
+        int arraySize = getArraySize(); // Получаем длину массива
 
         switch (source) {
             case "File":
-                loadFromFile();
+                loadFromFile(arraySize);
                 break;
             case "Manual Input":
-                manualInput(dataType);
+                manualInput(dataType, arraySize);
                 break;
             case "Random":
-                generateRandomData(dataType);
+                generateRandomData(dataType, arraySize);
                 break;
         }
     }
 
-    private void loadFromFile() {
+    private void loadFromFile(int maxSize) {
         JFileChooser fileChooser = new JFileChooser();
         int result = fileChooser.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
             try (BufferedReader reader = new BufferedReader(new FileReader(selectedFile))) {
                 data = new Object[0]; // Очистка массива
-                int maxSize = 1000;
                 String dataType = (String) dataTypeComboBox.getSelectedItem();
 
                 if (dataType == null) {
@@ -214,43 +226,48 @@ public class DataManagementApp extends JFrame {
         }
     }
 
-
-    private void manualInput(String dataType) {
+    private void manualInput(String dataType, int arraySize) {
         switch (dataType) {
             case "Bus":
                 try {
-                    int busNumber = Integer.parseInt(JOptionPane.showInputDialog(this, "Enter Bus Number:"));
-                    String busModel = JOptionPane.showInputDialog(this, "Enter Bus Model:");
-                    double busMileage = Double.parseDouble(JOptionPane.showInputDialog(this, "Enter Bus Mileage:"));
-                    addToArray(new Bus.BusBuilder()
-                            .setNumber(busNumber)
-                            .setModel(busModel)
-                            .setMileage(busMileage)
-                            .build());
+                    for (int i = 0; i < arraySize; i++) {
+                        int busNumber = Integer.parseInt(JOptionPane.showInputDialog(this, "Enter Bus Number:"));
+                        String busModel = JOptionPane.showInputDialog(this, "Enter Bus Model:");
+                        double busMileage = Double.parseDouble(JOptionPane.showInputDialog(this, "Enter Bus Mileage:"));
+                        addToArray(new Bus.BusBuilder()
+                                .setNumber(busNumber)
+                                .setModel(busModel)
+                                .setMileage(busMileage)
+                                .build());
+                    }
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(this, "Invalid input!", "Error", JOptionPane.ERROR_MESSAGE);
                 }
                 break;
             case "User":
-                String userName = JOptionPane.showInputDialog(this, "Enter User Name:");
-                String userPassword = JOptionPane.showInputDialog(this, "Enter User Password:");
-                String userEmail = JOptionPane.showInputDialog(this, "Enter User Email:");
-                addToArray(new User.UserBuilder()
-                        .setName(userName)
-                        .setPassword(userPassword)
-                        .setEmail(userEmail)
-                        .build());
+                for (int i = 0; i < arraySize; i++) {
+                    String userName = JOptionPane.showInputDialog(this, "Enter User Name:");
+                    String userPassword = JOptionPane.showInputDialog(this, "Enter User Password:");
+                    String userEmail = JOptionPane.showInputDialog(this, "Enter User Email:");
+                    addToArray(new User.UserBuilder()
+                            .setName(userName)
+                            .setPassword(userPassword)
+                            .setEmail(userEmail)
+                            .build());
+                }
                 break;
             case "Student":
                 try {
-                    int groupNumber = Integer.parseInt(JOptionPane.showInputDialog(this, "Enter Group Number:"));
-                    double averageGrade = Double.parseDouble(JOptionPane.showInputDialog(this, "Enter Average Grade:"));
-                    String recordBookNumber = JOptionPane.showInputDialog(this, "Enter Record Book Number:");
-                    addToArray(new Student.StudentBuilder()
-                            .setGroupNumber(groupNumber)
-                            .setAverageScore(averageGrade)
-                            .setRecordBookNumber(recordBookNumber)
-                            .build());
+                    for (int i = 0; i < arraySize; i++) {
+                        int groupNumber = Integer.parseInt(JOptionPane.showInputDialog(this, "Enter Group Number:"));
+                        double averageGrade = Double.parseDouble(JOptionPane.showInputDialog(this, "Enter Average Grade:"));
+                        String recordBookNumber = JOptionPane.showInputDialog(this, "Enter Record Book Number:");
+                        addToArray(new Student.StudentBuilder()
+                                .setGroupNumber(groupNumber)
+                                .setAverageScore(averageGrade)
+                                .setRecordBookNumber(recordBookNumber)
+                                .build());
+                    }
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(this, "Invalid input!", "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -259,24 +276,24 @@ public class DataManagementApp extends JFrame {
         displayData();
     }
 
-    private void generateRandomData(String dataType) {
+    private void generateRandomData(String dataType, int arraySize) {
         Random random = new Random();
         switch (dataType) {
             case "Bus":
                 BusGenerator busGenerator = new BusGenerator();
-                for (int i = 0; i < 10; i++) {
+                for (int i = 0; i < arraySize; i++) {
                     addToArray(busGenerator.generate());
                 }
                 break;
             case "User":
                 UserGenerator userGenerator = new UserGenerator();
-                for (int i = 0; i < 10; i++) {
+                for (int i = 0; i < arraySize; i++) {
                     addToArray(userGenerator.generate());
                 }
                 break;
             case "Student":
                 StudentGenerator studentGenerator = new StudentGenerator();
-                for (int i = 0; i < 10; i++) {
+                for (int i = 0; i < arraySize; i++) {
                     addToArray(studentGenerator.generate());
                 }
                 break;
