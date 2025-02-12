@@ -4,7 +4,6 @@ import java.util.Comparator;
 
 public class SelectionSort <T extends Comparable<T>> implements SortingStrategy<T> {
 
-
     @Override
     public void sort(T[] array) {
         for (int i = 0; i < array.length - 1; i++) {
@@ -19,7 +18,6 @@ public class SelectionSort <T extends Comparable<T>> implements SortingStrategy<
             array[i] = temp;
         }
     }
-
 
     public void sort(T[] array, Comparator<T> comparator) {
         for (int i = 0; i < array.length - 1; i++) {

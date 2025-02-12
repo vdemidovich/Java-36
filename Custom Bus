@@ -1,0 +1,71 @@
+import java.util.Comparator;
+import java.util.function.ToIntFunction;
+
+class SelectionSort<T> {
+    // Метод для сортировки массива по умолчанию (использует compareTo)
+    public void sort(T[] array) {
+        for (int i = 0; i < array.length - 1; i++) {
+            int minIndex = i;
+            for (int j = i + 1; j < array.length; j++) {
+                if (((Comparable<T>) array[j]).compareTo(array[minIndex]) < 0) {
+                    minIndex = j;
+                }
+            }
+            T temp = array[minIndex];
+            array[minIndex] = array[i];
+            array[i] = temp;
+        }
+    }
+
+    // Метод для кастомной сортировки массива (использует компаратор)
+    public void sort(T[] array, Comparator<T> comparator) {
+        for (int i = 0; i < array.length - 1; i++) {
+            int minIndex = i;
+            for (int j = i + 1; j < array.length; j++) {
+                if (comparator.compare(array[j], array[minIndex]) < 0) {
+                    minIndex = j;
+                }
+            }
+            T temp = array[minIndex];
+            array[minIndex] = array[i];
+            array[i] = temp;
+        }
+    }
+
+public class Main {
+    public static void main(String[] args) {
+        // Создаем массив автобусов
+        Bus[] buses = {
+            new Bus(102, "Model1", 120000),
+            new Bus(101, "Model2", 80000),
+            new Bus(104, "Model3", 150000),
+            new Bus(103, "Model2", 50000),
+            new Bus(106, "Model4", 70000),
+            new Bus(105, "Model5", 90000)
+        };
+
+        // Создаем экземпляр SelectionSort
+        SelectionSort<Bus> busSorter = new SelectionSort<>();
+
+        // Выводим массив до сортировки
+        System.out.println("=== Before Sorting Buses ===");
+        printArray(buses);
+
+        // Сортировка автобусов с учетом четности номера
+        busSorter.sortWithEvenLogic(
+            buses,
+            Bus::getNumber, // Извлекаем число (номер автобуса)
+            Comparator.naturalOrder() // Натуральный порядок сравнения
+        );
+
+        System.out.println("\n=== After Custom Sorting Buses (even numbers first) ===");
+        printArray(buses);
+    }
+
+    // Универсальный метод для вывода массива
+    public static <T> void printArray(T[] array) {
+        for (T item : array) {
+            System.out.println(item);
+        }
+    }
+}

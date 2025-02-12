@@ -85,15 +85,6 @@ public class Bus implements Sortable<Bus> {
         }
 
         public Bus build() {
-            if (this.number < 0) {
-                throw new IllegalArgumentException("Number cannot be negative");
-            }
-            if (this.model == null || this.model.isEmpty()) {
-                throw new IllegalArgumentException("Model cannot be null or empty");
-            }
-            if (this.mileage < 0) {
-                throw new IllegalArgumentException("Mileage cannot be negative");
-            }
             return new Bus(this);
         }
     }

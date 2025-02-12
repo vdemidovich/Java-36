@@ -1,0 +1,99 @@
+import java.util.Comparator;
+import java.util.function.ToIntFunction;
+
+class SelectionSort<T> {
+    // Метод для сортировки массива по умолчанию (использует compareTo)
+    public void sort(T[] array) {
+        for (int i = 0; i < array.length - 1; i++) {
+            int minIndex = i;
+            for (int j = i + 1; j < array.length; j++) {
+                if (((Comparable<T>) array[j]).compareTo(array[minIndex]) < 0) {
+                    minIndex = j;
+                }
+            }
+            T temp = array[minIndex];
+            array[minIndex] = array[i];
+            array[i] = temp;
+        }
+    }
+
+    // Метод для кастомной сортировки массива (использует компаратор)
+    public void sort(T[] array, Comparator<T> comparator) {
+        for (int i = 0; i < array.length - 1; i++) {
+            int minIndex = i;
+            for (int j = i + 1; j < array.length; j++) {
+                if (comparator.compare(array[j], array[minIndex]) < 0) {
+                    minIndex = j;
+                }
+            }
+            T temp = array[minIndex];
+            array[minIndex] = array[i];
+            array[i] = temp;
+        }
+    }
+
+    // Метод для сортировки с учетом четности числового поля
+    public void sortWithEvenLogic(T[] array, ToIntFunction<T> keyExtractor, Comparator<T> comparator) {
+        for (int i = 0; i < array.length - 1; i++) {
+            int minIndex = i;
+            for (int j = i + 1; j < array.length; j++) {
+                int keyI = keyExtractor.applyAsInt(array[i]);
+                int keyJ = keyExtractor.applyAsInt(array[j]);
+
+                // Проверяем четность числового поля
+                if (keyJ % 2 == 0 && keyI % 2 != 0) {
+                    minIndex = j; // Если элемент j четный, а i нечетный, меняем их местами
+                } else if (keyJ % 2 == 0 & keyI % 2 == 0) {
+                    // Если оба элемента четные, сортируем их в натуральном порядке
+                    if (comparator.compare(array[j],array[minIndex]) < 0) {
+                        minIndex = j;
+                    }
+                }
+            }
+
+            // Меняем местами только если найден меньший четный элемент
+            if (minIndex != i) {
+                T temp = array[minIndex];
+                array[minIndex] = array[i];
+                array[i] = temp;
+            }
+        }
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        // Создаем массив студентов
+        Student[] students = {
+                new Student(10, 4.5, 101),
+                new Student(11, 3.7, 102),
+                new Student(14, 4.0, 103),
+                new Student(13, 4.8, 104),
+                new Student(16, 3.9, 105)
+        };
+
+        // Создаем экземпляр SelectionSort
+        SelectionSort<Student> studentSorter = new SelectionSort<>();
+
+        // Выводим массив до сортировки
+        System.out.println("=== Before Sorting Students ===");
+        printArray(students);
+
+        // Сортировка студентов с учетом четности номера группы
+        studentSorter.sortWithEvenLogic(
+                students,
+                Student::getGroupNumber, // Извлекаем число (номер группы)
+                Comparator.comparingInt(Student::getGroupNumber) // Сравниваем по номеру группы
+        );
+
+        System.out.println("\n=== After Custom Sorting Students (even group numbers first) ===");
+        printArray(students);
+    }
+
+    // Универсальный метод для вывода массива
+    public static <T> void printArray(T[] array) {
+        for (T item : array) {
+            System.out.println(item);
+        }
+    }
+}

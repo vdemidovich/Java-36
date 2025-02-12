@@ -143,7 +143,6 @@ public class DataManagementApp extends JFrame {
                 break;
         }
 
-        writeToFile(data);
         displayData();
     }
 
@@ -262,7 +261,7 @@ public class DataManagementApp extends JFrame {
                     for (int i = 0; i < arraySize; i++) {
                         int groupNumber = Integer.parseInt(JOptionPane.showInputDialog(this, "Enter Group Number:"));
                         double averageGrade = Double.parseDouble(JOptionPane.showInputDialog(this, "Enter Average Grade:"));
-                        String recordBookNumber = JOptionPane.showInputDialog(this, "Enter Record Book Number:"));
+                        String recordBookNumber = JOptionPane.showInputDialog(this, "Enter Record Book Number:");
                         addToArray(new Student.StudentBuilder()
                                 .setGroupNumber(groupNumber)
                                 .setAverageScore(averageGrade)
@@ -323,3 +322,4 @@ public class DataManagementApp extends JFrame {
         });
     }
 }
+
