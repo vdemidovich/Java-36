@@ -33,9 +33,9 @@ public class Student implements Sortable<Student> {
 
     @Override
     public int compareTo(Student o) {
-        int result = Double.compare(this.averageScore, o.averageScore);
+        int result = Integer.compare(this.groupNumber, o.groupNumber);
         if (result == 0) {
-            result = Integer.compare(this.groupNumber, o.groupNumber);
+            result = Double.compare(this.averageScore, o.averageScore);
         }
         if (result == 0) {
             result = this.recordBookNumber.compareTo(o.recordBookNumber);

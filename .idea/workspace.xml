@@ -6,9 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="58842580-497f-4438-94e8-1afbb7100e1b" name="Changes" comment="fix: corrected data type change issue">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/models/Bus.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/models/Bus.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/UI/DataManagementApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/UI/DataManagementApp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/file/DataWriter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/file/DataWriter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/generator/StudentGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/generator/StudentGenerator.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/models/Student.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/models/Student.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/models/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/models/User.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,6 +20,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Interface" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -30,9 +32,9 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 5
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 5
+}</component>
   <component name="ProjectId" id="2soWLCl93fqkIUiEQQWW2E6yJxV" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -42,7 +44,7 @@
   "keyToString": {
     "Application.DataManagementApp.executor": "Run",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "dev/project-structure",
+    "git-widget-placeholder": "User-5-UI-Жарков-Владислав",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/vladi/IdeaProjects/Java36/Java-36",
@@ -70,6 +72,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.DataManagementApp" />
         <item itemvalue="Application.DataManagementApp" />
       </list>
     </recent_temporary>
