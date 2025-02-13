@@ -41,6 +41,7 @@ public class DataManagementApp extends JFrame {
         controlPanel.setLayout(new GridLayout(6, 2)); // Увеличили количество строк для нового элемента
 
         JButton sortButton = new JButton("Sort");
+        JButton customSortButton = new JButton("Custom Sort");
         JButton searchButton = new JButton("Search");
         JButton inputButton = new JButton("Input Data");
         JButton exitButton = new JButton("Exit");
@@ -60,6 +61,7 @@ public class DataManagementApp extends JFrame {
         controlPanel.add(dataTypeComboBox);
         controlPanel.add(new JLabel("Array Size:"));
         controlPanel.add(arraySizeField);
+        controlPanel.add(customSortButton);
         controlPanel.add(exitButton);
 
         outputArea = new JTextArea();
@@ -72,6 +74,7 @@ public class DataManagementApp extends JFrame {
         sortButton.addActionListener(e -> sortData());
         searchButton.addActionListener(e -> searchData());
         inputButton.addActionListener(e -> inputData());
+        customSortButton.addActionListener(e -> customSortData());
         exitButton.addActionListener(e -> System.exit(0));
     }
 
@@ -146,7 +149,7 @@ public class DataManagementApp extends JFrame {
                 break;
         }
 
-        //writeToFile(data);
+        writeToFile(data);
         displayData();
     }
 
@@ -177,8 +180,8 @@ public class DataManagementApp extends JFrame {
                     break;
             }
 
-            //writeToFile(data);
             if (results != -1) {
+                writeToFile(new Object[]{data[results]});
                 displaySearchResults(new Object[]{data[results]});
             } else {
                 JOptionPane.showMessageDialog(this, "No results found", "Search Result", JOptionPane.INFORMATION_MESSAGE);
@@ -255,7 +258,7 @@ public class DataManagementApp extends JFrame {
         } else if ("Average Grade".equals(parameter)) {
             return BinarySearch.rank(new Student.StudentBuilder().setAverageScore(Double.parseDouble(searchTerm)).build(), (Student[]) data, new Student.StudentAverageScoreComparator());
         } else if ("Record Book Number".equals(parameter)) {
-            return BinarySearch.rank(new Student.StudentBuilder().setRecordBookNumber(searchTerm).build(), (Student[]) data, new Student.StudentRecordBookNumberComparator());
+            return BinarySearch.rank(new Student.StudentBuilder().setRecordBookNumber(Integer.parseInt(searchTerm)).build(), (Student[]) data, new Student.StudentRecordBookNumberComparator());
         }
 
         return -1;
@@ -381,7 +384,7 @@ public class DataManagementApp extends JFrame {
                     for (int i = 0; i < arraySize; i++) {
                         int groupNumber = Integer.parseInt(JOptionPane.showInputDialog(this, "Enter Group Number:"));
                         double averageGrade = Double.parseDouble(JOptionPane.showInputDialog(this, "Enter Average Grade:"));
-                        String recordBookNumber = JOptionPane.showInputDialog(this, "Enter Record Book Number:");
+                        int recordBookNumber = Integer.parseInt(JOptionPane.showInputDialog(this, "Enter Record Book Number:"));
                         addToArray(new Student.StudentBuilder()
                                 .setGroupNumber(groupNumber)
                                 .setAverageScore(averageGrade)
@@ -397,7 +400,6 @@ public class DataManagementApp extends JFrame {
     }
 
     private void generateRandomData(String dataType, int arraySize) {
-        Random random = new Random();
         switch (dataType) {
             case "Bus":
                 BusGenerator busGenerator = new BusGenerator();
@@ -419,6 +421,70 @@ public class DataManagementApp extends JFrame {
                 break;
         }
         displayData();
+    }
+
+    private void customSortData() {
+        if (data.length == 0) {
+            JOptionPane.showMessageDialog(this, "No data to sort.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String dataType = (String) dataTypeComboBox.getSelectedItem();
+        String parameter = (String) sortParameterComboBox.getSelectedItem();
+
+        try {
+            switch (dataType) {
+                case "Bus":
+                    data = sortBusData(parameter);
+                    writeToFile(data);
+                    break;
+                case "Student":
+                    data = sortStudentData(parameter);
+                    writeToFile(data);
+                    break;
+                case "User":
+                    JOptionPane.showMessageDialog(this, "No suitable fields for sorting in User", "Warning", JOptionPane.WARNING_MESSAGE);
+                    break;
+                default:
+                    JOptionPane.showMessageDialog(this, "Unsupported data type", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+            }
+        } catch (ClassCastException ex) {
+            JOptionPane.showMessageDialog(this, "Data type mismatch! Cannot convert objects.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        displayData();
+    }
+
+    private Bus[] sortBusData(String parameter) {
+        Bus[] busData = Arrays.copyOf(data, data.length, Bus[].class);
+        SelectionSort<Bus> selectionSort = new SelectionSort<>();
+
+        if ("Number".equals(parameter)) {
+            selectionSort.sort(busData, new Bus.BusNumberComparator(), Bus::getNumber);
+        } else if ("Mileage".equals(parameter)) {
+            selectionSort.sort(busData, new Bus.BusMileageComparator(), Bus::getMileage);
+        } else {
+            JOptionPane.showMessageDialog(this, "Please select a numeric field (Number or Mileage) for sorting.", "Warning", JOptionPane.WARNING_MESSAGE);
+        }
+
+        return busData;
+    }
+
+    private Student[] sortStudentData(String parameter) {
+        Student[] studentData = Arrays.copyOf(data, data.length, Student[].class);
+        SelectionSort<Student> selectionSort = new SelectionSort<>();
+
+        if ("Group Number".equals(parameter)) {
+            selectionSort.sort(studentData, new Student.StudentGroupNumberComparator(), Student::getGroupNumber);
+        } else if ("Average Grade".equals(parameter)) {
+            selectionSort.sort(studentData, new Student.StudentAverageScoreComparator(), Student::getAverageScore);
+        } else if ("Record Book Number".equals(parameter)) {
+            selectionSort.sort(studentData, new Student.StudentRecordBookNumberComparator(), Student::getRecordBookNumber);
+        }
+
+        return studentData;
     }
 
     private void displayData() {

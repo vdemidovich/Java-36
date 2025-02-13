@@ -9,7 +9,7 @@ public class StudentMapper implements Mapper<Student> {
         return new Student.StudentBuilder()
             .setGroupNumber(Integer.parseInt(parts[0].trim()))
             .setAverageScore(Double.parseDouble(parts[1].trim()))
-            .setRecordBookNumber(parts[2].trim())
+            .setRecordBookNumber(Integer.parseInt(parts[2].trim()))
             .build();
     }
 }
