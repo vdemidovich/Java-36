@@ -1,8 +1,10 @@
 package org.example.models;
 
+import org.example.file.Writable;
+
 import java.util.Comparator;
 
-public class Bus implements Sortable<Bus> {
+public class Bus implements Sortable<Bus>, Writable {
     private final int number;
     private final String model;
     private final double mileage;
@@ -40,6 +42,11 @@ public class Bus implements Sortable<Bus> {
             result = Double.compare(this.mileage, other.mileage);
         }
         return result;
+    }
+
+    @Override
+    public String toWriteFormat() {
+        return number + ", " + model + ", " + mileage;
     }
 
     public static class BusNumberComparator implements Comparator<Bus> {

@@ -1,8 +1,10 @@
 package org.example.models;
 
+import org.example.file.Writable;
+
 import java.util.Comparator;
 
-public class Student implements Sortable<Student> {
+public class Student implements Sortable<Student>, Writable {
     private final int groupNumber;
     private final double averageScore;
     private final String recordBookNumber;
@@ -29,6 +31,11 @@ public class Student implements Sortable<Student> {
     public String toString() {
         return "Student [groupNumber=" + groupNumber + ", averageScore=" + averageScore +
                 ", recordBookNumber=" + recordBookNumber + "]";
+    }
+
+    @Override
+    public String toWriteFormat() {
+        return groupNumber + ", " + averageScore + ", " + recordBookNumber;
     }
 
     @Override
