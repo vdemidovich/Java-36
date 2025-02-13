@@ -13,8 +13,10 @@ public class DataWriter {
 
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
                 for (Object item : array) {
-                    writer.write((String) item);
-                    writer.newLine();
+                    if (item instanceof Writable writable) {
+                        writer.write(writable.toWriteFormat());
+                        writer.newLine();
+                    }
                 }
             }
         } catch (IOException e) {

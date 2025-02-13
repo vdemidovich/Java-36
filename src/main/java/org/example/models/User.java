@@ -1,8 +1,10 @@
 package org.example.models;
 
+import org.example.file.Writable;
+
 import java.util.Comparator;
 
-public class User implements Sortable<User> {
+public class User implements Sortable<User>, Writable {
     private final String name;
     private final String password;
     private final String email;
@@ -40,6 +42,11 @@ public class User implements Sortable<User> {
             result = this.password.compareTo(o.password);
         }
         return result;
+    }
+
+    @Override
+    public String toWriteFormat() {
+        return name + ", " + password + ", " + email;
     }
 
     public static class UserNameComparator implements Comparator<User> {
