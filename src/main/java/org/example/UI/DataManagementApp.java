@@ -4,10 +4,13 @@ import org.example.file.*;
 import org.example.generator.BusGenerator;
 import org.example.generator.StudentGenerator;
 import org.example.generator.UserGenerator;
-import org.example.models.Bus;
-import org.example.models.Student;
-import org.example.models.User;
+import org.example.models.*;
+import org.example.search.BinarySearch;
+import org.example.sorting.strategies.bus.*;
+import org.example.sorting.strategies.student.*;
+import org.example.sorting.strategies.user.*;
 import org.example.sorting.SelectionSort;
+import org.example.sorting.SortingStrategy;
 
 import javax.swing.*;
 import java.awt.*;
@@ -143,17 +146,134 @@ public class DataManagementApp extends JFrame {
                 break;
         }
 
+        //writeToFile(data);
         displayData();
     }
 
     private void searchData() {
         String searchTerm = JOptionPane.showInputDialog(this, "Enter search term:");
         if (searchTerm != null && !searchTerm.isEmpty()) {
-            Object[] results = Arrays.stream(data)
-                    .filter(s -> s.toString().toLowerCase().contains(searchTerm.toLowerCase()))
-                    .toArray();
-            displaySearchResults(results);
-            writeToFile(results);
+            String dataType = (String) dataTypeComboBox.getSelectedItem();
+            String parameter = (String) sortParameterComboBox.getSelectedItem();
+            int results = -1;
+
+            if (data == null || data.length == 0) {
+                JOptionPane.showMessageDialog(this, "No data to search.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            switch (dataType) {
+                case "Bus":
+                    results = searchBus(searchTerm, parameter);
+                    break;
+                case "User":
+                    results = searchUser(searchTerm, parameter);
+                    break;
+                case "Student":
+                    results = searchStudent(searchTerm, parameter);
+                    break;
+                default:
+                    JOptionPane.showMessageDialog(this, "Unsupported data type", "Error", JOptionPane.ERROR_MESSAGE);
+                    break;
+            }
+
+            //writeToFile(data);
+            if (results != -1) {
+                displaySearchResults(new Object[]{data[results]});
+            } else {
+                JOptionPane.showMessageDialog(this, "No results found", "Search Result", JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
+    }
+
+    private int searchBus(String searchTerm, String parameter) {
+        try {
+            sortBuses(parameter);
+            if ("Number".equals(parameter)) {
+                return BinarySearch.rank(new Bus.BusBuilder().setNumber(Integer.parseInt(searchTerm)).build(), (Bus[]) data, new Bus.BusNumberComparator());
+            } else if ("Mileage".equals(parameter)) {
+                return BinarySearch.rank(new Bus.BusBuilder().setMileage(Double.parseDouble(searchTerm)).build(), (Bus[]) data, new Bus.BusMileageComparator());
+            } else if ("Model".equals(parameter)) {
+                return BinarySearch.rank(new Bus.BusBuilder().setModel(searchTerm).build(), (Bus[]) data, new Bus.BusModelComparator());
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Invalid search term!", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        return -1;
+    }
+
+    private void sortBuses(String parameter) {
+        Bus[] buses = Arrays.copyOf(data, data.length, Bus[].class);
+
+        Map<String, SortingStrategy<Bus>> sortStrategies = new HashMap<>();
+        sortStrategies.put("Number", new BusSortByNumber());
+        sortStrategies.put("Mileage", new BusSortByMileage());
+        sortStrategies.put("Model", new BusSortByModel());
+
+        SortingStrategy<Bus> sortStrategy = sortStrategies.get(parameter);
+
+        if (sortStrategy != null) {
+            sortStrategy.sort(buses);
+            data = buses;
+        }
+    }
+
+    private int searchUser(String searchTerm, String parameter) {
+        sortUsers(parameter);
+        if ("Name".equals(parameter)) {
+            return BinarySearch.rank(new User.UserBuilder().setName(searchTerm).build(), (User[]) data, new User.UserNameComparator());
+        } else if ("Email".equals(parameter)) {
+            return BinarySearch.rank(new User.UserBuilder().setEmail(searchTerm).build(), (User[]) data, new User.UserEmailComparator());
+        } else if ("Password".equals(parameter)) {
+            return BinarySearch.rank(new User.UserBuilder().setPassword(searchTerm).build(), (User[]) data, new User.UserPasswordComparator());
+        }
+
+        return -1;
+    }
+
+    private void sortUsers(String parameter) {
+        User[] users = Arrays.copyOf(data, data.length, User[].class);
+
+        Map<String, SortingStrategy<User>> sortStrategies = new HashMap<>();
+        sortStrategies.put("Name", new UserSortByName());
+        sortStrategies.put("Email", new UserSortByEmail());
+        sortStrategies.put("Password", new UserSortByPassword());
+
+        SortingStrategy<User> sortStrategy = sortStrategies.get(parameter);
+
+        if (sortStrategy != null) {
+            sortStrategy.sort(users);
+            data = users;
+        }
+    }
+
+    private int searchStudent(String searchTerm, String parameter) {
+        sortStudents(parameter);
+        if ("Group Number".equals(parameter)) {
+            return BinarySearch.rank(new Student.StudentBuilder().setGroupNumber(Integer.parseInt(searchTerm)).build(), (Student[]) data, new Student.StudentGroupNumberComparator());
+        } else if ("Average Grade".equals(parameter)) {
+            return BinarySearch.rank(new Student.StudentBuilder().setAverageScore(Double.parseDouble(searchTerm)).build(), (Student[]) data, new Student.StudentAverageScoreComparator());
+        } else if ("Record Book Number".equals(parameter)) {
+            return BinarySearch.rank(new Student.StudentBuilder().setRecordBookNumber(searchTerm).build(), (Student[]) data, new Student.StudentRecordBookNumberComparator());
+        }
+
+        return -1;
+    }
+
+    private void sortStudents(String parameter) {
+        Student[] students = Arrays.copyOf(data, data.length, Student[].class);
+
+        Map<String, SortingStrategy<Student>> sortStrategies = new HashMap<>();
+        sortStrategies.put("Group Number", new StudentSortByGroupNumber());
+        sortStrategies.put("Average Grade", new StudentSortByAverageGrade());
+        sortStrategies.put("Record Book Number", new StudentSortByRecordBookNumber());
+
+        SortingStrategy<Student> sortStrategy = sortStrategies.get(parameter);
+
+        if (sortStrategy != null) {
+            sortStrategy.sort(students);
+            data = students;
         }
     }
 
