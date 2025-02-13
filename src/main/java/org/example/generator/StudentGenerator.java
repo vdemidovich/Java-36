@@ -5,9 +5,9 @@ import org.example.models.Student;
 public class StudentGenerator extends DataGenerator<Student> {
     @Override
     public Student generate() {
-        int group = (int) (Math.random() * 5);
+        int group = (int) (Math.random() * 5) + 1;
         double grade = Math.round((Math.random() * 9 + 1) * 10) / 10.0;
-        String gradeBook = String.valueOf(generateUniqueNumber());
+        int gradeBook = (int) (Math.random() * 200000);
         return new Student.StudentBuilder().setGroupNumber(group).setAverageScore(grade).setRecordBookNumber(gradeBook).build();
     }
 }

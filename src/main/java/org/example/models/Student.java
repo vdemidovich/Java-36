@@ -7,7 +7,7 @@ import java.util.Comparator;
 public class Student implements Sortable<Student>, Writable {
     private final int groupNumber;
     private final double averageScore;
-    private final String recordBookNumber;
+    private final int recordBookNumber;
 
     private Student(StudentBuilder builder) {
         this.groupNumber = builder.groupNumber;
@@ -23,7 +23,7 @@ public class Student implements Sortable<Student>, Writable {
         return averageScore;
     }
 
-    public String getRecordBookNumber() {
+    public int getRecordBookNumber() {
         return recordBookNumber;
     }
 
@@ -45,7 +45,7 @@ public class Student implements Sortable<Student>, Writable {
             result = Double.compare(this.averageScore, o.averageScore);
         }
         if (result == 0) {
-            result = this.recordBookNumber.compareTo(o.recordBookNumber);
+            result = Integer.compare(this.recordBookNumber, o.recordBookNumber);
         }
         return result;
     }
@@ -67,7 +67,7 @@ public class Student implements Sortable<Student>, Writable {
     public static class StudentRecordBookNumberComparator implements Comparator<Student> {
         @Override
         public int compare(Student student1, Student student2) {
-            return student1.getRecordBookNumber().compareTo(student2.getRecordBookNumber());
+            return Integer.compare(student1.getRecordBookNumber(), student2.getRecordBookNumber());
         }
     }
 
@@ -75,7 +75,7 @@ public class Student implements Sortable<Student>, Writable {
     public static class StudentBuilder {
         private int groupNumber;
         private double averageScore;
-        private String recordBookNumber;
+        private int recordBookNumber;
 
         public StudentBuilder setGroupNumber(int groupNumber) {
             this.groupNumber = groupNumber;
@@ -87,7 +87,7 @@ public class Student implements Sortable<Student>, Writable {
             return this;
         }
 
-        public StudentBuilder setRecordBookNumber(String recordBookNumber) {
+        public StudentBuilder setRecordBookNumber(int recordBookNumber) {
             this.recordBookNumber = recordBookNumber;
             return this;
         }
